@@ -1,7 +1,28 @@
 PSEUDOCODE
 
-setup:
-initialise pins
+setup:  
+  initialise pins
 
 loop:
+  DetectRemote()
+  RunFerrisWheel()
+  RunStaircase()
+  RunTrackSplitter()
+  
+DetectRemote:
+  if(RemotePressed):
+    do groupBoxPattern
+  else
+    do singleBoxPattern
 
+RunFerrisWheel:
+  run ferrisWheelMotor
+
+RunStairCase:  
+  run staircaseMotor
+
+RunTrackSplitter:
+  if(sensorTriggered):
+    direct marbles to staircase (left)
+  else:
+    direct marbles to ferris wheel (right)
