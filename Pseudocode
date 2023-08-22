@@ -1,28 +1,49 @@
 PSEUDOCODE
 
 setup:  
+  import Arduino libraries
+  import other libraries
   initialise pins
 
 loop:
-  DetectRemote()
-  RunFerrisWheel()
+  DetectRemote() // Ben and Quoc
+  RunFerrisWheel() 
   RunStaircase()
-  RunTrackSplitter()
+  RunTrackSplitter() // Eugene for track splitter, Rumeth for traffic lights
   
 DetectRemote:
   if(RemotePressed):
-    do groupBoxPattern
-  else
-    do singleBoxPattern
+    do groupBoxPatternFerrisWheel
+    do groupBoxPatternStaircase
+  else:
+    do singleBoxPatternFerrisWheel
+    do singleBoxPatternStaircase
 
 RunFerrisWheel:
-  run ferrisWheelMotor
+  try {
+    run ferrisWheelMotor
+    make pattern green
+  }
+  catch (IOexception e){
+    make pattern red
+  }
 
 RunStairCase:  
-  run staircaseMotor
+  try {
+    run staircaseMotor
+    make pattern green
+  }
+  catch (IOexception e){
+    make pattern red
+  }
 
 RunTrackSplitter:
-  if(sensorTriggered):
-    direct marbles to staircase (left)
-  else:
-    direct marbles to ferris wheel (right)
+  sumMarbles = 0
+  if(enterSensorTriggered): 
+    sumMarbles++
+    if(sumMarbles == 4):
+      closeRightSide // direct marbles to the staircase (left side)
+    else: 
+      openRightSide
+  if(exitSensorTriggered):
+      sumMarbles--
