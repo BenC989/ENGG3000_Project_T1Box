@@ -7,9 +7,9 @@ setup:
 
 loop:
   DetectRemote() // Ben and Quoc
-  RunFerrisWheel() // Irvin (lights), Thomas (motor)
+  RunFerrisWheel() // Irvin (lights), Rumeth (motor)
   RunStaircase() // Vikil (lights), Thomas (motor)
-  RunTrackSplitter() // Eugene for track splitter and traffic lights
+  RunTrackSplitter() // Eugene 
   
 DetectRemote:
   if(RemotePressed):
