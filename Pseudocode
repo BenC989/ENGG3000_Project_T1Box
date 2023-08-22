@@ -7,9 +7,9 @@ setup:
 
 loop:
   DetectRemote() // Ben and Quoc
-  RunFerrisWheel() 
-  RunStaircase()
-  RunTrackSplitter() // Eugene for track splitter, Rumeth for traffic lights
+  RunFerrisWheel() // Irvin (lights), Thomas (motor)
+  RunStaircase() // Vikil (lights), Thomas (motor)
+  RunTrackSplitter() // Eugene for track splitter and traffic lights
   
 DetectRemote:
   if(RemotePressed):
@@ -43,7 +43,9 @@ RunTrackSplitter:
     sumMarbles++
     if(sumMarbles == 4):
       closeRightSide // direct marbles to the staircase (left side)
+      setTrafficLight to red
     else: 
       openRightSide
+      setTrafficLight to green
   if(exitSensorTriggered):
       sumMarbles--
