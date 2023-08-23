@@ -18,6 +18,8 @@ Servo (https://www.arduino.cc/reference/en/libraries/servo/)
 
 fastLED (https://fastled.io/)
 
+NeoPixel (https://github.com/adafruit/Adafruit_NeoPixel)
+
 ## Stepper
 
 Stepper (https://www.arduino.cc/reference/en/libraries/stepper/)
