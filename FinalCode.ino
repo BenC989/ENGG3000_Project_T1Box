@@ -65,29 +65,40 @@ void runTrackSplitter(){
 // Ferris Wheel Lights Function (IRVIN)
 void ferrisWheelLights(){
     if(ferrisWheelMotorRunning){ // If ferris wheel motor is functional turn the ferris wheel LED to green
-        colorWipe(ferrisWheelLED.Color(0,255,0) //Green
+        colorWipe(ferrisWheelLED.Color(0,255,0); //Green
     }else if(!ferrisWheelMotorRunning){ // If ferris wheel motor is not functional turn the ferris wheel LED to red
-        colorWipe(ferrisWheelLED.Color(255,0,0) //Red
+        colorWipe(ferrisWheelLED.Color(255,0,0); //Red
     }
 }
 
 // Ferris Wheel Motor Function (RUMETH)
 void ferrisWheelMotor(){
+    // Pseudocode (IRVIN)
+    
+        // runMotor(); *the function will include ferrisWheelMotorRunning = true*
+        // if(motorSpeed <= *a small number close to zero to create buffer for errors*)
+            // ferrisWheelMotorRunning = false;
+            // killSwitch(); *turns off everything (e.g. motors, splitter)* 
 
 }
 
 // Staircase Lights Function (VIKIL)
 void staircaseLights(){
     if(stairsMotorRunning){ // If stairs motor is functional turn the stairs LED to green
-        colorWipe(stairsLED.Color(0,255,0) //Green
+        colorWipe(stairsLED.Color(0,255,0); //Green
     }else if(!stairsMotorRunning){ // If stairs motor is not functional turn the stairs LED to red
-        colorWipe(stairsLED.Color(255,0,0) //Red
+        colorWipe(stairsLED.Color(255,0,0); //Red
     }
 }
 
 // Staircase Motor Function (THOMAS)
 void staircaseMotor(){
-
+    // Pseudocode (IRVIN)
+    
+        // runMotor(); *runMotor() will include stairsMotorRunning = true*
+        // if(motorSpeed <= *a small number close to zero to create buffer for errors*)
+            // stairsMotorRunning = false;
+            // killSwitch(); *turns off everything (e.g. motors, splitter)*  
 }
 
 // All LED setups (IRVIN)
