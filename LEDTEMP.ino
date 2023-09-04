@@ -16,10 +16,12 @@ class Motor {
     String status;
 
   public:
-    Motor(int pin1, int pin2) : pin1(pin1), pin2(pin2), currentSpeed(0), status("STOPPED")
+    Motor(int pin1, int pin2) : pin1(pin1), pin2(pin2)
     {
       pinMode(pin1, OUTPUT);
       pinMode(pin2, OUTPUT);
+      currentSpeed = 0;
+      status = "STOPPED";
     }
 
     void stop() {
