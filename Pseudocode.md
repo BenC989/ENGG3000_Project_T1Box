@@ -15,14 +15,12 @@ loop:
   DetectRemote() // Ben and Quoc
   FerrisWheelMotor() // Irvin and Thomas
   StaircaseMotor() // Irvin and Thomas
-  DisplayOurBoxPattern() // Rumeth, Vikil and Eugene
-  DisplayGroupBoxPattern() // Rumeth, Vikil and Eugene
 
 DetectRemote: // Ben and Quoc
   if(remotePressed):
-    DisplayGroupBoxPattern()
+    DisplayGroupBoxPattern() // Rumeth, Vikil and Eugene
   else:
-    DisplayOurBoxPattern()
+    DisplayOurBoxPattern() // Rumeth, Vikil and Eugene
 
 FerrisWheelMotor: // Irvin and Thomas
   run ferrisWheelMotor
