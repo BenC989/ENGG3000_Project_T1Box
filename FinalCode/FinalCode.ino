@@ -1,29 +1,27 @@
 // Import Libraries
 #include <Servo.h>;
 #include <Adafruit_NeoPixel.h>;
-
+#include <ArduinoBLE.h>;
 
 // Initialise Variables
 
-    // Pins Initialisation
-        
-        #define ferrisWheelPIN *placeholder*;
-        #define stairsPIN *placeholder*;
-    
-    // LED Strips Initialisation
-        
-        // Creating LED objects with the following parrameters
-        // Parameter 1: The amount of pixels in each light (Takes in integers)
-        // Parameter 2: The location of used pin for the LED strips (Takes in integers)
-        // Parameter 3: The flag colors (Takes in variables from the //Adafruit_NeoPixel.h\\ library)
-        
-        Adafruit_NeoPixel ferrisWheelLED = Adafruit_NeoPixel(120,ferrisWheelPIN,NEO_GRB);
-        Adafruit_NeoPixel stairsLED = Adafruit_NeoPixel(120,stairsPIN,NEO_GRB);
+// Pins Initialisation
+#define ferrisWheelPIN *placeholder*;
+#define stairsPIN *placeholder*;
 
-    // LED Flags Initialisation
-        
-        bool ferrisWheelMotorRunning = false; //Flag if the ferris wheel motor is running
-        bool stairsMotorRunning = false; //Flag if the stairs motor is running
+// LED Strips Initialisation
+    
+// Creating LED objects with the following parrameters
+// Parameter 1: The amount of pixels in each light (Takes in integers)
+// Parameter 2: The location of used pin for the LED strips (Takes in integers)
+// Parameter 3: The flag colors (Takes in variables from the //Adafruit_NeoPixel.h\\ library)
+
+Adafruit_NeoPixel ferrisWheelLED = Adafruit_NeoPixel(120,ferrisWheelPIN,NEO_GRB);
+Adafruit_NeoPixel stairsLED = Adafruit_NeoPixel(120,stairsPIN,NEO_GRB);
+
+// LED Flags Initialisation
+bool ferrisWheelMotorRunning = false; //Flag if the ferris wheel motor is running
+bool stairsMotorRunning = false; //Flag if the stairs motor is running
 
 // Setup Function
 void setup(){
@@ -44,6 +42,7 @@ void loop(){
 
 // Detect Remote Function (BEN, QUOC)
 void detectRemote(){
+   
 }
 
 // Run Ferris Wheel 
