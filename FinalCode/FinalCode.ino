@@ -64,9 +64,9 @@ void runTrackSplitter(){
 // Ferris Wheel Lights Function (IRVIN)
 void ferrisWheelLights(){
     if(ferrisWheelMotorRunning){ // If ferris wheel motor is functional turn the ferris wheel LED to green
-        colorWipe(ferrisWheelLED.Color(0,255,0); //Green
+        ferrisWheelLED.fill((0,255,0)); //Green
     }else if(!ferrisWheelMotorRunning){ // If ferris wheel motor is not functional turn the ferris wheel LED to red
-        colorWipe(ferrisWheelLED.Color(255,0,0); //Red
+        ferrisWheelLED.fill((255,0,0)); //Red
     }
 }
 
@@ -84,9 +84,9 @@ void ferrisWheelMotor(){
 // Staircase Lights Function (VIKIL)
 void staircaseLights(){
     if(stairsMotorRunning){ // If stairs motor is functional turn the stairs LED to green
-        colorWipe(stairsLED.Color(0,255,0); //Green
+        stairsLED.fill((0,255,0)); //Green
     }else if(!stairsMotorRunning){ // If stairs motor is not functional turn the stairs LED to red
-        colorWipe(stairsLED.Color(255,0,0); //Red
+        stairsLED.fill((255,0,0)); //Red
     }
 }
 
