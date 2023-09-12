@@ -5,18 +5,16 @@
 #define LED_PIN  6
 #define NUM_LEDS 10
 
+int high = 0; // This variable is not used
 
-int high = 0; //This variable is not used
+unsigned long time = 0; // Time used to implement event-driven code
 
-unsigned long time = 0; //Time used to create a event-driven code
-
-int state = 0; //States used in the traffic light function
+int state = 0; // States used in the traffic light function
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB); 
 
-//Used to manage the states accross the different motors
-
-//Motor class to instantiate the motors and set multiple attributes that are embeded in the class
+// Used to manage the states accross the different motors
+// Motor class to instantiate the motors and set multiple attributes that are embeded in the class
 class Motor {
   private:
     int motorNumber; 
@@ -31,72 +29,75 @@ class Motor {
       stop();
     }
 
-    //Stops motor 
+    // Function to stop motor 
     void stop() { 
       motor.run(RELEASE);
       status = "STOPPED";
     }
 
-    //Retreive and prints the motor's status
+    // Function to retreive and print the motor's current status
     String getStatus() { 
       Serial.println(status);
       return status;
     }
 
-    //Set motor speed
+    // Function to set the motor speed
     void setSpeed(int speed) { 
       motor.setSpeed(speed);
     }
 
-    //Run the motor in a forward motion manner
+    // Function to run the motor in a forward motion manner
     void forward() { 
         motor.run(FORWARD);
         status = "MOVING";
     }
 
-    //Run the motor in a backward motion manner
+    // Function to run the motor in a backward motion manner
     void backward() { 
         motor.run(BACKWARD);
         status = "MOVING";
     }
 };
 
-//Instantiate Motors
+// Instantiate the motors
 Motor m1 (1);
 Motor m2 (4);
 
+// Setup function
 void setup() {
 
-  //Configure Motors
+  // Configure the motors
   m1.setSpeed(100);
   m2.setSpeed(100);
 
-  //Opens serial port and sets data rate to 9600 bits per second
+  // Open serial port and set data rate to 9600 bits per second
   Serial.begin(9600); 
 
-  //Configure LED strip
+  // Configure LED strip
   strip.begin();
   strip.setBrightness(125);
 }
 
+// Loop function
 void loop() {
 
-  //Mutate the time to be seconds instead of milliseconds
+  // Mutate the time to be seconds instead of milliseconds
   time = millis() / 1000; 
   
-  //Run the motors in a forward manner
+  // Run the motors in a forward manner
   m1.forward();
   m2.forward();
   
-  //Example of time based activity
-  if(time % 2) //Every 2 seconds checks for state
+  // Example of time based activity
+  if(time % 2) // Check for the state every two seconds
     if(state == 1) {
       state = 0;
     }
     else {
       state = 1;
     }
-  delay(1000);
+  delay(1000); // --- Note: We shouldn't be using delays, remember what Rex said
+  
   if(time % 2000) {
     Serial.println(analogRead(0));
     Serial.println(analogRead(2));
@@ -108,10 +109,12 @@ void loop() {
 
 
 void traffic(int state) {
-  //clear strip to recieve new information
+  
+  // Clear strip to recieve new information
   strip.clear();
   uint32_t colour = 0;
-  //If something is blocking the sensor the strip will be set to red, green if sensor is not blocked
+  
+  // If something is blocking the sensor the strip will be set to red, green if sensor is not blocked
   if(state == 1) {
     colour = strip.Color(255, 0, 0); 
   }
@@ -123,3 +126,16 @@ void traffic(int state) {
   strip.show();
 }
 
+// A basic pattern function - not being used at the moment
+void LEDPattern1 {
+  
+  // Every two seconds, display a new colour on the LED strip
+  if((time % 2) == 0){
+    int r = random(0, 255);
+    int g = random(0, 255);
+    int b = random(0, 255);
+  }
+  colour = strip.Color(r, g, b);
+  strip.fill(colour, 0, (NUM_LEDS - 1));
+  strip.show();
+}
