@@ -127,7 +127,7 @@ void traffic(int state) {
 }
 
 // A basic pattern function - not being used at the moment
-void LEDPattern1 {
+void LEDPattern1() {
   
   // Every two seconds, display a new colour on the LED strip
   if((time % 2) == 0){
