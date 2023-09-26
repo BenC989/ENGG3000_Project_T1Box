@@ -102,7 +102,7 @@ void traffic(int state) {
   strip.show();
 }
 
-boolean detectMotorError(Motor m){
+bool detectMotorError(Motor m){
   int errorValue = analogRead(m.getMotorNumber());
   return errorValue > 300;
 }
