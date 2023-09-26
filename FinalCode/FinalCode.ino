@@ -102,3 +102,8 @@ void traffic(int state) {
   strip.show();
 }
 
+boolean detectMotorError(Motor m){
+  int errorValue = analogRead(m.getMotorNumber());
+  return errorValue > 300;
+}
+
