@@ -9,6 +9,12 @@ int high = 0;
 
 unsigned long time = 0;
 int state = 0;
+
+//below variables used for LED patterns 
+unsigned long led_Patt_Lasttriggered = 0;
+unsigned long led_Patt_IncrementPattIndex = 0;
+unsigned long led_Patt_Offset = 500;
+
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB);
 
 //Used to manage the states accross the different motors
@@ -106,4 +112,20 @@ bool detectMotorError(Motor m){
   int errorValue = analogRead(m.getMotorNumber());
   return errorValue > 300;
 }
+
+
+//pattern that increments each led - need to be called in loop()
+void incrementPatt(){
+  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+    strip.show();
+    led_Patt_Lasttriggered = time;
+    if(led_Patt_IncrementPattIndex = NUM_LEDS-1){
+      strip.clear();
+      led_Patt_IncrementPattIndex = -1;
+    }
+    led_Patt_IncrementPattIndex++;
+  }
+}
+
 
