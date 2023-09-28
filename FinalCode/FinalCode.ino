@@ -5,6 +5,14 @@
 #define LED_PIN  6
 #define NUM_LEDS 10
 
+//define pins for error strip TO CHANGE
+#define ERROR_LED_PIN  2
+#define ERROR_NUM_LEDS 4
+
+//define max RGB values
+#define MAX_RGB 255
+#define MIN_RGB 0
+
 int high = 0;
 
 unsigned long time = 0;
@@ -15,7 +23,14 @@ unsigned long led_Patt_Lasttriggered = 0;
 unsigned long led_Patt_IncrementPattIndex = 0;
 unsigned long led_Patt_Offset = 500;
 
+//rgb strip declaration
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB);
+Adafruit_NeoPixel errorStrip = Adafruit_NeoPixel(ERROR_NUM_LEDS,ERROR_LED_PIN, NEO_GRB);
+
+//simple var declaration for traffic light module
+unsigned int red;
+unsigned int green;
+unsigned int blue;
 
 //Used to manage the states accross the different motors
 class Motor {
@@ -84,6 +99,7 @@ void loop() {
   time = millis();
   m1.forward();
   m2.forward();
+  setError();
   
   if(time >= m1.nextTriggerTime) {
     m1.calcNextTriggerTime(time);
@@ -108,11 +124,38 @@ void traffic(int state) {
   strip.show();
 }
 
+//motor error detection based on analog read
+//TODO: need driver to test. Do it in STGA!
 bool detectMotorError(Motor m){
   int errorValue = analogRead(m.getMotorNumber());
   return errorValue > 300;
 }
 
+//set error light vals red
+void setRed(){
+  red = MAX_RGB;
+  green = MIN_RGB;
+  blue = MIN_RGB;
+}
+
+//set error light vals green
+void setGreen(){
+  red = MIN_RGB;
+  green = MAX_RGB;
+  blue = MIN_RGB;
+}
+
+//set error light red if there's an error, green if there isn't
+void setError(){
+  if(detectMotorError(m1) || detectMotorError(m2)){
+    setRed();
+  }
+  else{
+    setGreen();
+  }
+  errorStrip.fill(errorStrip.Color(red, green, blue), 0, ERROR_NUM_LEDS - 1);
+  errorStrip.show();
+}
 
 //pattern that increments each led - need to be called in loop()
 void incrementPatt(){
