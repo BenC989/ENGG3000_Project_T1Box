@@ -44,6 +44,7 @@ class Motor {
   public:
     int lastTriggerTime;
     int nextTriggerTime;
+    int triggerTime;
     Motor(int motorNumber, int triggerTime) : motorNumber(motorNumber), motor(motorNumber), triggerTime(triggerTime)
     {
       speed = 0;
@@ -83,11 +84,11 @@ class Motor {
 };
 
 Motor m1 (1, 500);
-Motor m2 (4, 500);
+Motor m2 (2, 500);
 
 void setup() {
-  m1.setSpeed(255);
-  m2.setSpeed(100);
+  m1.setSpeed(50);
+  m2.setSpeed(50);
   Serial.begin(9600);
 
   //Configure LED strip
@@ -99,7 +100,7 @@ void loop() {
   time = millis();
   m1.forward();
   m2.forward();
-  setError();
+  //setError();
   
   if(time >= m1.nextTriggerTime) {
     m1.calcNextTriggerTime(time);
@@ -126,36 +127,36 @@ void traffic(int state) {
 
 //motor error detection based on analog read
 //TODO: need driver to test. Do it in STGA!
-bool detectMotorError(Motor m){
-  int errorValue = analogRead(m.getMotorNumber());
-  return errorValue > 300;
-}
+//bool detectMotorError(Motor m){
+//  int errorValue = analogRead(m.getMotorNumber());
+//  return errorValue > 300;
+//}
 
 //set error light vals red
-void setRed(){
-  red = MAX_RGB;
-  green = MIN_RGB;
-  blue = MIN_RGB;
-}
+// void setRed(){
+//   red = MAX_RGB;
+//   green = MIN_RGB;
+//   blue = MIN_RGB;
+// }
 
-//set error light vals green
-void setGreen(){
-  red = MIN_RGB;
-  green = MAX_RGB;
-  blue = MIN_RGB;
-}
+// //set error light vals green
+// void setGreen(){
+//   red = MIN_RGB;
+//   green = MAX_RGB;
+//   blue = MIN_RGB;
+// }
 
-//set error light red if there's an error, green if there isn't
-void setError(){
-  if(detectMotorError(m1) || detectMotorError(m2)){
-    setRed();
-  }
-  else{
-    setGreen();
-  }
-  errorStrip.fill(errorStrip.Color(red, green, blue), 0, ERROR_NUM_LEDS - 1);
-  errorStrip.show();
-}
+// //set error light red if there's an error, green if there isn't
+// void setError(){
+//   if(detectMotorError(m1) || detectMotorError(m2)){
+//     setRed();
+//   }
+//   else{
+//     setGreen();
+//   }
+//   errorStrip.fill(errorStrip.Color(red, green, blue), 0, ERROR_NUM_LEDS - 1);
+//   errorStrip.show();
+// }
 
 //pattern that increments each led - need to be called in loop()
 void incrementPatt(){
