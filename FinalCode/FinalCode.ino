@@ -1,6 +1,5 @@
 #include <Adafruit_NeoPixel.h>;
-#include <AFMotor.h>
-#include <Servo.h>
+#include <CytronMotorDriver.h>
 
 #define LED_PIN  6
 #define NUM_LEDS 10
@@ -38,23 +37,24 @@ unsigned int blue;
 class Motor {
   private:
     int motorNumber;
+    int PWMNumber;
     int speed;
     String status;
-    AF_DCMotor motor;
+    CytronMD motor;
     int triggerOffset;
 
   public:
     int lastTriggerTime;
     int nextTriggerTime;
     int triggerTime;
-    Motor(int motorNumber, int triggerTime) : motorNumber(motorNumber), motor(motorNumber), triggerTime(triggerTime)
+    Motor(int motorNumber, int PWMNumber, int triggerTime) : motorNumber(motorNumber), PWMNumber(PWMNumber), motor(PWM_PWM, motorNumber, PWMNumber), triggerTime(triggerTime)
     {
       speed = 0;
       stop();
     }
 
     void stop() {
-      motor.run(RELEASE);
+      motor.setSpeed(0);
       status = "STOPPED";
     }
 
@@ -66,13 +66,13 @@ class Motor {
       motor.setSpeed(speed);
     }
 
-    void forward() {
-        motor.run(FORWARD);
+    void forward(int speed) {
+        motor.setSpeed(speed);
         status = "MOVING";
     }
 
-    void backward() {
-        motor.run(BACKWARD);
+    void backward(int speed) {
+        motor.setSpeed(speed);
         status = "MOVING";
     }
 
@@ -85,12 +85,10 @@ class Motor {
     }
 };
 
-Motor m1 (1, 500);
-Motor m2 (2, 500);
+Motor m1 (1, 9, 500);
+Motor m2 (2, 11, 500);
 
 void setup() {
-  m1.setSpeed(50);
-  m2.setSpeed(50);
   Serial.begin(9600);
 
   //Configure LED strip
@@ -100,8 +98,8 @@ void setup() {
 
 void loop() {
   time = millis();
-  m1.forward();
-  m2.forward();
+  m1.forward(50);
+  m2.forward(50);
   //setError();
   
   if(time >= m1.nextTriggerTime) {
