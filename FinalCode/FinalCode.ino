@@ -22,7 +22,8 @@ int state = 0;
 unsigned long led_Patt_Lasttriggered = 0;
 unsigned long led_Patt_IncrementPattIndex = 0;
 unsigned long led_Patt_Offset = 500;
-int LED_Patt_cycleCount = 0
+int numPixPat = 0;
+int LED_Patt_cycleCount = 0;
 
 //rgb strip declaration
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB);
@@ -176,7 +177,7 @@ void incrementPatt(){
 }
 
 //Back forth LED pattern (pix is a parameter that sets the block of LED thats going to follow the patteren)
-void backForth(int pix){
+void backForthMult(int pix){
   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
     if(LED_Patt_cycleCount % 2 != 0){
     	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
@@ -227,6 +228,21 @@ void loopSingle() {
     led_Patt_IncrementPattIndex++;
   }
   if(led_Patt_IncrementPattIndex >= NUM_LEDS) led_Patt_IncrementPattIndex = -1;
+}
+
+void stackMult(int pix) {
+  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+    strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
+    strip.show();
+    led_Patt_Lasttriggered = time;
+    led_Patt_IncrementPattIndex++;
+    if(led_Patt_IncrementPattIndex >= numPixPat){ 
+    	led_Patt_IncrementPattIndex = -1;
+    	numPixPat-=pix;
+      if(numPixPat <= 0)numPixPat = 32+ pix;
+  	}
+  }
 }
 
 
