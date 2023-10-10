@@ -160,87 +160,87 @@ void traffic(int state) {
 
 //=============================================================LED PATTERNS=============================================================\\
 
-//pattern that increments each led - need to be called in loop()
-void incrementPatt(){
-  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-    strip.show();
-    led_Patt_Lasttriggered = time;
-    if(led_Patt_IncrementPattIndex = NUM_LEDS-1){
-      strip.clear();
-      led_Patt_IncrementPattIndex = -1;
-    }
-    led_Patt_IncrementPattIndex++;
-  }
-}
+// //pattern that increments each led - need to be called in loop()
+// void incrementPatt(){
+//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+//     strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+//     strip.show();
+//     led_Patt_Lasttriggered = time;
+//     if(led_Patt_IncrementPattIndex = NUM_LEDS-1){
+//       strip.clear();
+//       led_Patt_IncrementPattIndex = -1;
+//     }
+//     led_Patt_IncrementPattIndex++;
+//   }
+// }
 
-//Back forth LED pattern (pix is a parameter that sets the block of LED thats going to follow the patteren)
-void backForthMult(int pix){
-  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-    if(LED_Patt_cycleCount % 2 != 0){
-    	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-    	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
-      	led_Patt_Lasttriggered = time;
-    }else{
-    	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-    	strip.setPixelColor(led_Patt_IncrementPattIndex+pix, strip.Color(0, 0, 0));
-      	led_Patt_Lasttriggered = time;
-    }
-    strip.show();
-    led_Patt_Lasttriggered = time;
-    if(led_Patt_IncrementPattIndex%2 == 0){
-    	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
-    }
-    if(cycleCount % 2 != 0) led_Patt_IncrementPattIndex++;
-    if(cycleCount % 2 == 0) led_Patt_IncrementPattIndex--;
-    if(led_Patt_IncrementPattIndex >= NUM_LEDS) LED_Patt_cycleCount++;
-  }
-}
+// //Back forth LED pattern (pix is a parameter that sets the block of LED thats going to follow the patteren)
+// void backForthMult(int pix){
+//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+//     if(LED_Patt_cycleCount % 2 != 0){
+//     	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+//     	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
+//       	led_Patt_Lasttriggered = time;
+//     }else{
+//     	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+//     	strip.setPixelColor(led_Patt_IncrementPattIndex+pix, strip.Color(0, 0, 0));
+//       	led_Patt_Lasttriggered = time;
+//     }
+//     strip.show();
+//     led_Patt_Lasttriggered = time;
+//     if(led_Patt_IncrementPattIndex%2 == 0){
+//     	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
+//     }
+//     if(cycleCount % 2 != 0) led_Patt_IncrementPattIndex++;
+//     if(cycleCount % 2 == 0) led_Patt_IncrementPattIndex--;
+//     if(led_Patt_IncrementPattIndex >= NUM_LEDS) LED_Patt_cycleCount++;
+//   }
+// }
 
-void oddSwap() {
-  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-    if(LED_Patt_cycleCount % 2 ==0){
-    	for(int i =0 ; i < NUM_LEDS+2;i += 2){
-    		strip.setPixelColor(i,strip.Color(0, 0, 255));
-    	}
-    	strip.show();
-      	led_Patt_Lasttriggered = time;
-    }else{
-      for(int i = 1 ; i < NUM_LEDS+2;i += 2){
-    		strip.setPixelColor(i,pixels.Color(0, 0, 255));
-    	}
-    	strip.show();
-      	led_Patt_Lasttriggered = time;
-    }
-    LED_Patt_cycleCount++;
-  }
-  strip.clear();
-}
+// void oddSwap() {
+//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+//     if(LED_Patt_cycleCount % 2 ==0){
+//     	for(int i =0 ; i < NUM_LEDS+2;i += 2){
+//     		strip.setPixelColor(i,strip.Color(0, 0, 255));
+//     	}
+//     	strip.show();
+//       	led_Patt_Lasttriggered = time;
+//     }else{
+//       for(int i = 1 ; i < NUM_LEDS+2;i += 2){
+//     		strip.setPixelColor(i,pixels.Color(0, 0, 255));
+//     	}
+//     	strip.show();
+//       	led_Patt_Lasttriggered = time;
+//     }
+//     LED_Patt_cycleCount++;
+//   }
+//   strip.clear();
+// }
 
-void loopSingle() {
-  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-    strip.setPixelColor(led_Patt_IncrementPattIndex-1, strip.Color(0, 0, 0));
-    strip.show();
-    led_Patt_Lasttriggered = time;
-    led_Patt_IncrementPattIndex++;
-  }
-  if(led_Patt_IncrementPattIndex >= NUM_LEDS) led_Patt_IncrementPattIndex = -1;
-}
+// void loopSingle() {
+//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+//     strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+//     strip.setPixelColor(led_Patt_IncrementPattIndex-1, strip.Color(0, 0, 0));
+//     strip.show();
+//     led_Patt_Lasttriggered = time;
+//     led_Patt_IncrementPattIndex++;
+//   }
+//   if(led_Patt_IncrementPattIndex >= NUM_LEDS) led_Patt_IncrementPattIndex = -1;
+// }
 
-void stackMult(int pix) {
-  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-    strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
-    strip.show();
-    led_Patt_Lasttriggered = time;
-    led_Patt_IncrementPattIndex++;
-    if(led_Patt_IncrementPattIndex >= numPixPat){ 
-    	led_Patt_IncrementPattIndex = -1;
-    	numPixPat-=pix;
-      if(numPixPat <= 0)numPixPat = 32+ pix;
-  	}
-  }
-}
+// void stackMult(int pix) {
+//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+//     strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+//     strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
+//     strip.show();
+//     led_Patt_Lasttriggered = time;
+//     led_Patt_IncrementPattIndex++;
+//     if(led_Patt_IncrementPattIndex >= numPixPat){ 
+//     	led_Patt_IncrementPattIndex = -1;
+//     	numPixPat-=pix;
+//       if(numPixPat <= 0)numPixPat = 32+ pix;
+//   	}
+//   }
+// }
 
 
