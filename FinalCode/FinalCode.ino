@@ -1,39 +1,40 @@
+// Define libraries to be included
 #include <Adafruit_NeoPixel.h>;
 #include <CytronMotorDriver.h>
 
 #define LED_PIN  6
 #define NUM_LEDS 10
 
-//define pins for error strip TO CHANGE
+// Define pins for error strip ****TO CHANGE****
 #define ERROR_LED_PIN  2
 #define ERROR_NUM_LEDS 4
 
-//define max RGB values
+// Define max RGB values
 #define MAX_RGB 255
 #define MIN_RGB 0
 
-int high = 0;
+// Declare the two RGB strips
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB);
+Adafruit_NeoPixel errorStrip = Adafruit_NeoPixel(ERROR_NUM_LEDS,ERROR_LED_PIN, NEO_GRB);
 
+// Define variables
+int high = 0;
 unsigned long time = 0;
 int state = 0;
 
-//below variables used for LED patterns 
+// Define variables to be used for LED patterns 
 unsigned long led_Patt_Lasttriggered = 0;
 unsigned long led_Patt_IncrementPattIndex = 0;
 unsigned long led_Patt_Offset = 500;
 int numPixPat = 0;
 int LED_Patt_cycleCount = 0;
 
-//rgb strip declaration
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB);
-Adafruit_NeoPixel errorStrip = Adafruit_NeoPixel(ERROR_NUM_LEDS,ERROR_LED_PIN, NEO_GRB);
-
-//simple var declaration for traffic light module
+// Define variables for traffic light module
 unsigned int red;
 unsigned int green;
 unsigned int blue;
 
-//Used to manage the states accross the different motors
+// Used to manage the states accross the different motors
 class Motor {
   private:
     int motorNumber;
@@ -47,47 +48,57 @@ class Motor {
     int lastTriggerTime;
     int nextTriggerTime;
     int triggerTime;
+    
     Motor(int motorNumber, int PWMNumber, int triggerTime) : motorNumber(motorNumber), PWMNumber(PWMNumber), motor(PWM_PWM, motorNumber, PWMNumber), triggerTime(triggerTime)
     {
       speed = 0;
       stop();
     }
 
+    // Function to stop a specified motor
     void stop() {
       motor.setSpeed(0);
       status = "STOPPED";
     }
-
+    
+    // Function to get the status of a specified motor
     String getStatus() {
       return status;
     }
-    
+
+    // Function to set the speed of a a specified motor
     void setSpeed(int speed) {
       motor.setSpeed(speed);
     }
 
+    // Function to set a specified motor to rotate forwards at a specified speed
     void forward(int speed) {
         motor.setSpeed(speed);
         status = "MOVING";
     }
 
+    // Function to set a specified motor to rotate backwards at a specified speed
     void backward(int speed) {
         motor.setSpeed(speed);
         status = "MOVING";
     }
 
+    // Function to get the trigger offset value of a specified motor
     int offset() {
       return triggerOffset;
     }
 
+    // Function to calculate the next trigger time of a specified motor
     void calcNextTriggerTime(int lastTriggerTime) {
       nextTriggerTime = lastTriggerTime + triggerOffset;
     }
 };
 
+// Declare and initialise the two motors to be used
 Motor m1 (1, 9, 500);
 Motor m2 (2, 11, 500);
 
+// Function to initialise components
 void setup() {
   Serial.begin(9600);
 
@@ -96,6 +107,7 @@ void setup() {
   strip.setBrightness(125);
 }
 
+// Function to continually execute the code
 void loop() {
   time = millis();
   m1.forward(50);
@@ -108,12 +120,14 @@ void loop() {
   }
 }
 
-
+// Function to visually indicate an error in the state of a motor (not rotating)
 void traffic(int state) {
-  //clear strip to recieve new information
+  // Clear the LED strip to recieve new information
   strip.clear();
   uint32_t colour = 0;
-  //If something is blocking the sensor the strip will be set to red, green if sensor is not blocked
+  
+  // If something is blocking the sensor the strip will be set to red, green if sensor is not blocked
+  // ??? 
   if(state == 1) {
     colour = strip.Color(255, 0, 0); 
   }
@@ -125,122 +139,131 @@ void traffic(int state) {
   strip.show();
 }
 
-//motor error detection based on analog read
-//TODO: need driver to test. Do it in STGA!
-//bool detectMotorError(Motor m){
-//  int errorValue = analogRead(m.getMotorNumber());
-//  return errorValue > 300;
-//}
+/*
+motor error detection based on analog read
+TODO: need driver to test. Do it in STGA!
 
-//set error light vals red
-// void setRed(){
-//   red = MAX_RGB;
-//   green = MIN_RGB;
-//   blue = MIN_RGB;
-// }
+// Function to detect if there is an error with the motor
+bool detectMotorError(Motor m){
+  int errorValue = analogRead(m.getMotorNumber());
+  return errorValue > 300;
+}
 
-// //set error light vals green
-// void setGreen(){
-//   red = MIN_RGB;
-//   green = MAX_RGB;
-//   blue = MIN_RGB;
-// }
+// Function to set all LEDs on the error LED strip to red
+void setRed(){
+  red = MAX_RGB;
+  green = MIN_RGB;
+  blue = MIN_RGB;
+}
 
-// //set error light red if there's an error, green if there isn't
-// void setError(){
-//   if(detectMotorError(m1) || detectMotorError(m2)){
-//     setRed();
-//   }
-//   else{
-//     setGreen();
-//   }
-//   errorStrip.fill(errorStrip.Color(red, green, blue), 0, ERROR_NUM_LEDS - 1);
-//   errorStrip.show();
-// }
+// Function to set all LEDs on the error LED strip to green
+void setGreen(){
+  red = MIN_RGB;
+  green = MAX_RGB;
+  blue = MIN_RGB;
+}
+
+// Function to set all LEDs on the error LED strip to red if an error occurs, otherwise green
+void setError(){
+  if(detectMotorError(m1) || detectMotorError(m2)){
+    setRed();
+  }
+  else{
+    setGreen();
+  }
+  errorStrip.fill(errorStrip.Color(red, green, blue), 0, ERROR_NUM_LEDS - 1);
+  errorStrip.show();
+}
+*/
 
 //=============================================================LED PATTERNS=============================================================\\
 
-// //pattern that increments each led - need to be called in loop()
-// void incrementPatt(){
-//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-//     strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-//     strip.show();
-//     led_Patt_Lasttriggered = time;
-//     if(led_Patt_IncrementPattIndex = NUM_LEDS-1){
-//       strip.clear();
-//       led_Patt_IncrementPattIndex = -1;
-//     }
-//     led_Patt_IncrementPattIndex++;
-//   }
-// }
+/*
+Currently commented for testing purposes
 
-// //Back forth LED pattern (pix is a parameter that sets the block of LED thats going to follow the patteren)
-// void backForthMult(int pix){
-//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-//     if(LED_Patt_cycleCount % 2 != 0){
-//     	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-//     	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
-//       	led_Patt_Lasttriggered = time;
-//     }else{
-//     	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-//     	strip.setPixelColor(led_Patt_IncrementPattIndex+pix, strip.Color(0, 0, 0));
-//       	led_Patt_Lasttriggered = time;
-//     }
-//     strip.show();
-//     led_Patt_Lasttriggered = time;
-//     if(led_Patt_IncrementPattIndex%2 == 0){
-//     	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
-//     }
-//     if(cycleCount % 2 != 0) led_Patt_IncrementPattIndex++;
-//     if(cycleCount % 2 == 0) led_Patt_IncrementPattIndex--;
-//     if(led_Patt_IncrementPattIndex >= NUM_LEDS) LED_Patt_cycleCount++;
-//   }
-// }
+// Pattern that increments each led - need to be called in loop()
+void incrementPatt(){
+  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+    strip.show();
+    led_Patt_Lasttriggered = time;
+    if(led_Patt_IncrementPattIndex = NUM_LEDS-1){
+      strip.clear();
+      led_Patt_IncrementPattIndex = -1;
+    }
+    led_Patt_IncrementPattIndex++;
+  }
+}
 
-// void oddSwap() {
-//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-//     if(LED_Patt_cycleCount % 2 ==0){
-//     	for(int i =0 ; i < NUM_LEDS+2;i += 2){
-//     		strip.setPixelColor(i,strip.Color(0, 0, 255));
-//     	}
-//     	strip.show();
-//       	led_Patt_Lasttriggered = time;
-//     }else{
-//       for(int i = 1 ; i < NUM_LEDS+2;i += 2){
-//     		strip.setPixelColor(i,pixels.Color(0, 0, 255));
-//     	}
-//     	strip.show();
-//       	led_Patt_Lasttriggered = time;
-//     }
-//     LED_Patt_cycleCount++;
-//   }
-//   strip.clear();
-// }
+// Back forth LED pattern (pix is a parameter that sets the block of LED thats going to follow the patteren)
+void backForthMult(int pix){
+  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+    if(LED_Patt_cycleCount % 2 != 0){
+    	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+    	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
+      	led_Patt_Lasttriggered = time;
+    }else{
+    	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+    	strip.setPixelColor(led_Patt_IncrementPattIndex+pix, strip.Color(0, 0, 0));
+      	led_Patt_Lasttriggered = time;
+    }
+    strip.show();
+    led_Patt_Lasttriggered = time;
+    if(led_Patt_IncrementPattIndex%2 == 0){
+    	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
+    }
+    if(cycleCount % 2 != 0) led_Patt_IncrementPattIndex++;
+    if(cycleCount % 2 == 0) led_Patt_IncrementPattIndex--;
+    if(led_Patt_IncrementPattIndex >= NUM_LEDS) LED_Patt_cycleCount++;
+  }
+}
 
-// void loopSingle() {
-//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-//     strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-//     strip.setPixelColor(led_Patt_IncrementPattIndex-1, strip.Color(0, 0, 0));
-//     strip.show();
-//     led_Patt_Lasttriggered = time;
-//     led_Patt_IncrementPattIndex++;
-//   }
-//   if(led_Patt_IncrementPattIndex >= NUM_LEDS) led_Patt_IncrementPattIndex = -1;
-// }
+// Odd swap LED pattern
+void oddSwap() {
+  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+    if(LED_Patt_cycleCount % 2 ==0){
+    	for(int i =0 ; i < NUM_LEDS+2;i += 2){
+    		strip.setPixelColor(i,strip.Color(0, 0, 255));
+    	}
+    	strip.show();
+      	led_Patt_Lasttriggered = time;
+    }else{
+      for(int i = 1 ; i < NUM_LEDS+2;i += 2){
+    		strip.setPixelColor(i,pixels.Color(0, 0, 255));
+    	}
+    	strip.show();
+      	led_Patt_Lasttriggered = time;
+    }
+    LED_Patt_cycleCount++;
+  }
+  strip.clear();
+}
 
-// void stackMult(int pix) {
-//   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-//     strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-//     strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
-//     strip.show();
-//     led_Patt_Lasttriggered = time;
-//     led_Patt_IncrementPattIndex++;
-//     if(led_Patt_IncrementPattIndex >= numPixPat){ 
-//     	led_Patt_IncrementPattIndex = -1;
-//     	numPixPat-=pix;
-//       if(numPixPat <= 0)numPixPat = 32+ pix;
-//   	}
-//   }
-// }
+// Loop single LED pattern
+void loopSingle() {
+  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+    strip.setPixelColor(led_Patt_IncrementPattIndex-1, strip.Color(0, 0, 0));
+    strip.show();
+    led_Patt_Lasttriggered = time;
+    led_Patt_IncrementPattIndex++;
+  }
+  if(led_Patt_IncrementPattIndex >= NUM_LEDS) led_Patt_IncrementPattIndex = -1;
+}
 
-
+// Stack mult LED pattern
+void stackMult(int pix) {
+  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
+    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+    strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
+    strip.show();
+    led_Patt_Lasttriggered = time;
+    led_Patt_IncrementPattIndex++;
+    if(led_Patt_IncrementPattIndex >= numPixPat){ 
+    	led_Patt_IncrementPattIndex = -1;
+    	numPixPat-=pix;
+      if(numPixPat <= 0)numPixPat = 32+ pix;
+  	}
+  }
+}
+*/
