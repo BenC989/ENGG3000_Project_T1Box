@@ -28,6 +28,15 @@ unsigned long led_Patt_IncrementPattIndex = 0;
 unsigned long led_Patt_Offset = 500;
 int numPixPat = 0;
 int LED_Patt_cycleCount = 0;
+int redColor = 0;
+int greenColor = 0;
+int blueColor = 0;
+int pattNum = random(0,3);
+int pattCycle = 1;
+int cycleCount = 0;
+int brightCycle =0;
+int oddSwapCount = 0;
+int brightPatt = 10;
 
 // Define variables for traffic light module
 unsigned int red;
@@ -101,7 +110,7 @@ Motor m2 (2, 11, 500);
 // Function to initialise components
 void setup() {
   Serial.begin(9600);
-
+  
   //Configure LED strip
   strip.begin();
   strip.setBrightness(125);
@@ -118,6 +127,14 @@ void loop() {
     m1.calcNextTriggerTime(time);
     traffic(1);
   }
+
+  // LED
+  stagePatt(pattNum);
+  colorRandom();
+  strip.setBrightness(brightPatt);
+  if(pattCycle%500 == 0) pattNum = random(0,3);
+  pattCycle++;
+  
 }
 
 // Function to visually indicate an error in the state of a motor (not rotating)
@@ -178,63 +195,90 @@ void setError(){
 
 //=============================================================LED PATTERNS=============================================================\\
 
-/*
-Currently commented for testing purposes
-
 // Pattern that increments each led - need to be called in loop()
 void incrementPatt(){
-  if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+  if(time >= led_Patt_Lasttriggered + led_Patt_Offset ){
+    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(redColor, greenColor,blueColor ));
     strip.show();
     led_Patt_Lasttriggered = time;
-    if(led_Patt_IncrementPattIndex = NUM_LEDS-1){
+    if(led_Patt_IncrementPattIndex == numPixPat-1){
       strip.clear();
       led_Patt_IncrementPattIndex = -1;
     }
     led_Patt_IncrementPattIndex++;
+    if(brightCycle % 2 ==0){
+      brightPatt+=5;
+    }else if (brightCycle %2 != 0){
+      brightPatt-=5;
+    }
+    if(brightPatt == 255){
+      brightCycle++;
+    }else if (brightPatt == 5){
+      brightCycle--;
+    }
   }
 }
 
 // Back forth LED pattern (pix is a parameter that sets the block of LED thats going to follow the patteren)
-void backForthMult(int pix){
+void backForth(int pix){
   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-    if(LED_Patt_cycleCount % 2 != 0){
-    	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-    	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
-      	led_Patt_Lasttriggered = time;
+    if(cycleCount % 2 != 0){
+      strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(redColor, greenColor,blueColor ));
+      strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
+        led_Patt_Lasttriggered = time;
     }else{
-    	strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
-    	strip.setPixelColor(led_Patt_IncrementPattIndex+pix, strip.Color(0, 0, 0));
-      	led_Patt_Lasttriggered = time;
+      strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(redColor, greenColor,blueColor ));
+      strip.setPixelColor(led_Patt_IncrementPattIndex+pix, strip.Color(0, 0, 0));
+        led_Patt_Lasttriggered = time;
     }
     strip.show();
     led_Patt_Lasttriggered = time;
     if(led_Patt_IncrementPattIndex%2 == 0){
-    	strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
+      strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
     }
     if(cycleCount % 2 != 0) led_Patt_IncrementPattIndex++;
     if(cycleCount % 2 == 0) led_Patt_IncrementPattIndex--;
-    if(led_Patt_IncrementPattIndex >= NUM_LEDS) LED_Patt_cycleCount++;
+    if(led_Patt_IncrementPattIndex >= NUMstrip) cycleCount++;
+    if(brightCycle % 2 ==0){
+      brightPatt+=5;
+    }else if (brightCycle %2 != 0){
+      brightPatt-=5;
+    }
+    if(brightPatt == 255){
+      brightCycle++;
+    }else if (brightPatt == 5){
+      brightCycle--;
+    }
   }
 }
 
 // Odd swap LED pattern
 void oddSwap() {
   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-    if(LED_Patt_cycleCount % 2 ==0){
-    	for(int i =0 ; i < NUM_LEDS+2;i += 2){
-    		strip.setPixelColor(i,strip.Color(0, 0, 255));
-    	}
-    	strip.show();
-      	led_Patt_Lasttriggered = time;
+    if(oddSwapCount % 2 ==0){
+      for(int i =0 ; i < NUMstrip+2;i += 2){
+        strip.setPixelColor(i,strip.Color(redColor, greenColor,blueColor ));
+      }
+      strip.show();
+        led_Patt_Lasttriggered = time;
     }else{
-      for(int i = 1 ; i < NUM_LEDS+2;i += 2){
-    		strip.setPixelColor(i,pixels.Color(0, 0, 255));
-    	}
-    	strip.show();
-      	led_Patt_Lasttriggered = time;
+      for(int i = 1 ; i < NUMstrip+2;i += 2){
+        strip.setPixelColor(i,strip.Color(redColor, greenColor,blueColor ));
+      }
+      strip.show();
+        led_Patt_Lasttriggered = time;
     }
-    LED_Patt_cycleCount++;
+    oddSwapCount++;
+    if(brightCycle % 2 ==0){
+      brightPatt+=5;
+    }else if (brightCycle %2 != 0){
+      brightPatt-=5;
+    }
+    if(brightPatt == 255){
+      brightCycle++;
+    }else if (brightPatt == 5){
+      brightCycle--;
+    }
   }
   strip.clear();
 }
@@ -254,16 +298,48 @@ void loopSingle() {
 // Stack mult LED pattern
 void stackMult(int pix) {
   if(time >= led_Patt_Lasttriggered + led_Patt_Offset){
-    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(0, 255, 0));
+    strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(redColor, greenColor,blueColor ));
     strip.setPixelColor(led_Patt_IncrementPattIndex-pix, strip.Color(0, 0, 0));
     strip.show();
     led_Patt_Lasttriggered = time;
     led_Patt_IncrementPattIndex++;
     if(led_Patt_IncrementPattIndex >= numPixPat){ 
-    	led_Patt_IncrementPattIndex = -1;
-    	numPixPat-=pix;
+      led_Patt_IncrementPattIndex = -1;
+      numPixPat-=pix;
       if(numPixPat <= 0)numPixPat = 32+ pix;
-  	}
+    }
+    if(brightCycle % 2 ==0){
+      brightPatt+=5;
+    }else if (brightCycle %2 != 0){
+      brightPatt-=5;
+    }
+    if(brightPatt == 255){
+      brightCycle++;
+    }else if (brightPatt == 5){
+      brightCycle--;
+    }
   }
 }
-*/
+
+void colorRandom() {
+  redColor = random(0,100);
+  greenColor= random(0,255);
+  blueColor = random(0,255);
+}
+
+void stagePatt(int patt) {
+    switch (patt) {
+      case 0:
+      incrementPatt();
+      break;
+      case 1:
+      backForth(5);
+      break;
+      case 2:
+      oddSwap();
+      break;
+      case 3:
+      stackMult(1);
+      break;
+  }
+}
