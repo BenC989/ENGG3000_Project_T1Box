@@ -2,6 +2,7 @@
 #include <Adafruit_NeoPixel.h>;
 #include <CytronMotorDriver.h>
 
+// Define pins for the regular LED strip
 #define LED_PIN  6
 #define NUM_LEDS 10
 
@@ -43,7 +44,10 @@ unsigned int red;
 unsigned int green;
 unsigned int blue;
 
-// Used to manage the states accross the different motors
+/*
+ * This is a class intended to be used to manage the states across the
+ * two motors. 
+*/ 
 class Motor {
   private:
     int motorNumber;
@@ -58,8 +62,7 @@ class Motor {
     int nextTriggerTime;
     int triggerTime;
     
-    Motor(int motorNumber, int PWMNumber, int triggerTime) : motorNumber(motorNumber), PWMNumber(PWMNumber), motor(PWM_PWM, motorNumber, PWMNumber), triggerTime(triggerTime)
-    {
+    Motor(int motorNumber, int PWMNumber, int triggerTime) : motorNumber(motorNumber), PWMNumber(PWMNumber), motor(PWM_PWM, motorNumber, PWMNumber), triggerTime(triggerTime) {
       speed = 0;
       stop();
     }
@@ -103,6 +106,10 @@ class Motor {
     }
 };
 
+/*
+ * Everything beyond this point is the main class
+*/
+
 // Declare and initialise the two motors to be used
 Motor m1 (1, 9, 500);
 Motor m2 (2, 11, 500);
@@ -111,7 +118,7 @@ Motor m2 (2, 11, 500);
 void setup() {
   Serial.begin(9600);
   
-  //Configure LED strip
+  // Configure the LED strip
   strip.begin();
   strip.setBrightness(125);
 }
@@ -123,28 +130,30 @@ void loop() {
   m2.forward(50);
   //setError();
   
+  // Calculate the next trigger time
   if(time >= m1.nextTriggerTime) {
     m1.calcNextTriggerTime(time);
     traffic(1);
   }
 
-  // LED
+  // Run a new random pattern
   stagePatt(pattNum);
   colorRandom();
   strip.setBrightness(brightPatt);
-  if(pattCycle%500 == 0) pattNum = random(0,3);
+  if(pattCycle%500 == 0) {
+    pattNum = random(0,3);
+  } 
   pattCycle++;
-  
 }
 
 // Function to visually indicate an error in the state of a motor (not rotating)
 void traffic(int state) {
+
   // Clear the LED strip to recieve new information
   strip.clear();
   uint32_t colour = 0;
   
   // If something is blocking the sensor the strip will be set to red, green if sensor is not blocked
-  // ??? 
   if(state == 1) {
     colour = strip.Color(255, 0, 0); 
   }
@@ -157,8 +166,10 @@ void traffic(int state) {
 }
 
 /*
-motor error detection based on analog read
-TODO: need driver to test. Do it in STGA!
+ * The following code is used for error detection. It is based on
+ * analog read. 
+ * TODO: need driver to test. Do it in STGA!
+*/
 
 // Function to detect if there is an error with the motor
 bool detectMotorError(Motor m){
@@ -191,11 +202,12 @@ void setError(){
   errorStrip.fill(errorStrip.Color(red, green, blue), 0, ERROR_NUM_LEDS - 1);
   errorStrip.show();
 }
+
+/*
+ * The following code contains all the LED patterns.
 */
 
-//=============================================================LED PATTERNS=============================================================\\
-
-// Pattern that increments each led - need to be called in loop()
+// Pattern that increments each led
 void incrementPatt(){
   if(time >= led_Patt_Lasttriggered + led_Patt_Offset ){
     strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(redColor, greenColor,blueColor ));
@@ -321,25 +333,27 @@ void stackMult(int pix) {
   }
 }
 
+// Generate a random colour for a LED
 void colorRandom() {
   redColor = random(0,100);
   greenColor= random(0,255);
   blueColor = random(0,255);
 }
 
+// Determine which pattern to run when given a random number
 void stagePatt(int patt) {
     switch (patt) {
       case 0:
-      incrementPatt();
-      break;
+        incrementPatt();
+        break;
       case 1:
-      backForth(5);
-      break;
+        backForth(5);
+        break;
       case 2:
-      oddSwap();
-      break;
+        oddSwap();
+        break;
       case 3:
-      stackMult(1);
-      break;
-  }
+        stackMult(1);
+        break;
+    }
 }
