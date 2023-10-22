@@ -322,7 +322,7 @@ void oddSwap()
   {
     if (oddSwapCount % 2 == 0)
     {
-      for (int i = 0; i < NUMstrip + 2; i += 2)
+      for (int i = 0; i < NUM_LEDS + 2; i += 2)
       {
         strip.setPixelColor(i, strip.Color(redColor, greenColor, blueColor));
       }
@@ -331,7 +331,7 @@ void oddSwap()
     }
     else
     {
-      for (int i = 1; i < NUMstrip + 2; i += 2)
+      for (int i = 1; i < NUM_LEDS + 2; i += 2)
       {
         strip.setPixelColor(i, strip.Color(redColor, greenColor, blueColor));
       }
