@@ -4,7 +4,7 @@
 
 // Define pins for the regular LED strip
 #define LED_PIN 6
-#define NUM_LEDS 10
+#define NUM_LEDS 12
 
 // Define pins for error strip ****TO CHANGE****
 #define ERROR_LED_PIN 2
@@ -155,13 +155,13 @@ void loop()
 
   // Run a new random pattern
   stagePatt(pattNum);
-  colorRandom();
-  strip.setBrightness(brightPatt);
-  if (pattCycle % 500 == 0)
+  colorRandom(); // Sets random color
+  strip.setBrightness(brightPatt); // Sets new brightness
+  if (pattCycle % 500 == 0) // Change patterns every 500 cycles
   {
     pattNum = random(0, 3);
   }
-  pattCycle++;
+  pattCycle++; // Track amount of cycles
 }
 
 // Function to visually indicate an error in the state of a motor (not rotating)
@@ -231,7 +231,7 @@ void setError()
 }
 
 /*
- * The following code contains all the LED patterns.
+ * <===========================The following code contains all the LED patterns.===========================>
  */
 
 // Pattern that increments each led
@@ -267,7 +267,7 @@ void incrementPatt()
   }
 }
 
-// Back forth LED pattern (pix is a parameter that sets the block of LED thats going to follow the patteren)
+// Back forth LED pattern (pix is a parameter that sets the number of pixel in the block of LED thats going to follow the pattern)
 void backForth(int pix)
 {
   if (time >= led_Patt_Lasttriggered + led_Patt_Offset)
@@ -374,7 +374,7 @@ void loopSingle()
     led_Patt_IncrementPattIndex = -1;
 }
 
-// Stack mult LED pattern
+// Stack mult (Tetris like pattern) LED pattern
 void stackMult(int pix)
 {
   if (time >= led_Patt_Lasttriggered + led_Patt_Offset)
@@ -389,7 +389,7 @@ void stackMult(int pix)
       led_Patt_IncrementPattIndex = -1;
       numPixPat -= pix;
       if (numPixPat <= 0)
-        numPixPat = 32 + pix;
+        numPixPat = NUM_LEDS + pix;
     }
     if (brightCycle % 2 == 0)
     {
@@ -410,7 +410,7 @@ void stackMult(int pix)
   }
 }
 
-// Generate a random colour for a LED
+// Generate a random colour for the LED
 void colorRandom()
 {
   redColor = random(0, 100);
