@@ -1,10 +1,10 @@
 // Define libraries to be included
 #include <Adafruit_NeoPixel.h>;
-#include <CytronMotorDriver.h>
+#include <AFMotor.h>
 
 // Define pins for the regular LED strip
 #define LED_PIN 6
-#define NUM_LEDS 12
+#define NUM_LEDS 10
 
 // Define pins for error strip ****TO CHANGE****
 #define ERROR_LED_PIN 2
@@ -48,14 +48,12 @@ unsigned int blue;
  * This is a class intended to be used to manage the states across the
  * two motors.
  */
-class Motor
-{
+class Motor {
 private:
   int motorNumber;
-  int PWMNumber;
   int speed;
   String status;
-  CytronMD motor;
+  AF_DCMotor motor;
   int triggerOffset;
 
 public:
@@ -63,7 +61,7 @@ public:
   int nextTriggerTime;
   int triggerTime;
 
-  Motor(int motorNumber, int PWMNumber, int triggerTime) : motorNumber(motorNumber), PWMNumber(PWMNumber), motor(PWM_PWM, motorNumber, PWMNumber), triggerTime(triggerTime)
+  Motor(int motorNumber, int triggerTime) : motorNumber(motorNumber), motor(motorNumber), triggerTime(triggerTime)
   {
     speed = 0;
     stop();
@@ -72,7 +70,7 @@ public:
   // Function to stop a specified motor
   void stop()
   {
-    motor.setSpeed(0);
+    motor.run(RELEASE);
     status = "STOPPED";
   }
 
@@ -89,16 +87,16 @@ public:
   }
 
   // Function to set a specified motor to rotate forwards at a specified speed
-  void forward(int speed)
+  void forward()
   {
-    motor.setSpeed(speed);
+    motor.run(FORWARD);
     status = "MOVING";
   }
 
   // Function to set a specified motor to rotate backwards at a specified speed
-  void backward(int speed)
+  void backward()
   {
-    motor.setSpeed(speed);
+    motor.run(BACKWARD);
     status = "MOVING";
   }
 
@@ -114,7 +112,7 @@ public:
     nextTriggerTime = lastTriggerTime + triggerOffset;
   }
 
-  void getMotorNumber()
+  int getMotorNumber()
   {
     return motorNumber;
   }
@@ -125,8 +123,8 @@ public:
  */
 
 // Declare and initialise the two motors to be used
-Motor m1(1, 9, 500);
-Motor m2(2, 11, 500);
+Motor m1(3, 500);
+Motor m2(4, 500);
 
 // Function to initialise components
 void setup()
@@ -136,14 +134,18 @@ void setup()
   // Configure the LED strip
   strip.begin();
   strip.setBrightness(125);
+
+  m1.setSpeed(255);
+  m2.setSpeed(255);
+
+  m1.forward();
+  m2.forward();
 }
 
 // Function to continually execute the code
 void loop()
 {
   time = millis();
-  m1.forward(50);
-  m2.forward(50);
   // setError();
 
   // Calculate the next trigger time
@@ -154,14 +156,11 @@ void loop()
   }
 
   // Run a new random pattern
-  stagePatt(pattNum);
-  colorRandom(); // Sets random color
-  strip.setBrightness(brightPatt); // Sets new brightness
-  if (pattCycle % 500 == 0) // Change patterns every 500 cycles
-  {
-    pattNum = random(0, 3);
-  }
-  pattCycle++; // Track amount of cycles
+  strip.setPixelColor(3, strip.Color(255, 0, 0));
+  colorRandom();
+  strip.setBrightness(brightPatt);
+
+  pattCycle++;
 }
 
 // Function to visually indicate an error in the state of a motor (not rotating)
@@ -231,7 +230,7 @@ void setError()
 }
 
 /*
- * <===========================The following code contains all the LED patterns.===========================>
+ * The following code contains all the LED patterns.
  */
 
 // Pattern that increments each led
@@ -267,7 +266,7 @@ void incrementPatt()
   }
 }
 
-// Back forth LED pattern (pix is a parameter that sets the number of pixel in the block of LED thats going to follow the pattern)
+// Back forth LED pattern (pix is a parameter that sets the block of LED thats going to follow the patteren)
 void backForth(int pix)
 {
   if (time >= led_Patt_Lasttriggered + led_Patt_Offset)
@@ -294,7 +293,7 @@ void backForth(int pix)
       led_Patt_IncrementPattIndex++;
     if (cycleCount % 2 == 0)
       led_Patt_IncrementPattIndex--;
-    if (led_Patt_IncrementPattIndex >= NUMstrip)
+    if (led_Patt_IncrementPattIndex >= NUM_LEDS)
       cycleCount++;
     if (brightCycle % 2 == 0)
     {
@@ -322,7 +321,7 @@ void oddSwap()
   {
     if (oddSwapCount % 2 == 0)
     {
-      for (int i = 0; i < NUM_LEDS + 2; i += 2)
+      for (int i = 0; i < 30 + 2; i += 2)
       {
         strip.setPixelColor(i, strip.Color(redColor, greenColor, blueColor));
       }
@@ -331,7 +330,7 @@ void oddSwap()
     }
     else
     {
-      for (int i = 1; i < NUM_LEDS + 2; i += 2)
+      for (int i = 1; i < 30 + 2; i += 2)
       {
         strip.setPixelColor(i, strip.Color(redColor, greenColor, blueColor));
       }
@@ -374,7 +373,7 @@ void loopSingle()
     led_Patt_IncrementPattIndex = -1;
 }
 
-// Stack mult (Tetris like pattern) LED pattern
+// Stack mult LED pattern
 void stackMult(int pix)
 {
   if (time >= led_Patt_Lasttriggered + led_Patt_Offset)
@@ -389,7 +388,7 @@ void stackMult(int pix)
       led_Patt_IncrementPattIndex = -1;
       numPixPat -= pix;
       if (numPixPat <= 0)
-        numPixPat = NUM_LEDS + pix;
+        numPixPat = 32 + pix;
     }
     if (brightCycle % 2 == 0)
     {
@@ -410,7 +409,7 @@ void stackMult(int pix)
   }
 }
 
-// Generate a random colour for the LED
+// Generate a random colour for a LED
 void colorRandom()
 {
   redColor = random(0, 100);
