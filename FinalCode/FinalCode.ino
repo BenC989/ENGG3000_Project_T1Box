@@ -1,48 +1,27 @@
-// Define libraries to be included
-#include <Adafruit_NeoPixel.h>;
 #include <AFMotor.h>
-
-// Define pins for the regular LED strip
-#define LED_PIN 6
-#define NUM_LEDS 10
-
-// Define pins for error strip ****TO CHANGE****
-#define ERROR_LED_PIN 2
-#define ERROR_NUM_LEDS 4
-
-// Define max RGB values
-#define MAX_RGB 255
-#define MIN_RGB 0
-
-// Declare the two RGB strips
+#include <Adafruit_NeoPixel.h>
+#define LED_PIN 2
+#define NUM_LEDS 12
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB);
-Adafruit_NeoPixel errorStrip = Adafruit_NeoPixel(ERROR_NUM_LEDS, ERROR_LED_PIN, NEO_GRB);
 
-// Define variables
-int high = 0;
+//Time variable
 unsigned long time = 0;
-int state = 0;
 
-// Define variables to be used for LED patterns
+//LED pattern variables
 unsigned long led_Patt_Lasttriggered = 0;
 unsigned long led_Patt_IncrementPattIndex = 0;
-unsigned long led_Patt_Offset = 500;
+unsigned long led_Patt_Offset = 10;
 int numPixPat = 0;
 int LED_Patt_cycleCount = 0;
 int redColor = 0;
 int greenColor = 0;
 int blueColor = 0;
-int pattNum = random(0, 3);
+int pattNum = random(0, 4);
 int pattCycle = 1;
 int cycleCount = 0;
 int brightCycle = 0;
 int oddSwapCount = 0;
 int brightPatt = 10;
-
-// Define variables for traffic light module
-unsigned int red;
-unsigned int green;
-unsigned int blue;
 
 /*
  * This is a class intended to be used to manage the states across the
@@ -146,92 +125,57 @@ void setup()
 void loop()
 {
   time = millis();
-  // setError();
+  
+  ledStart(4);
+}
 
-  // Calculate the next trigger time
-  if (time >= m1.nextTriggerTime)
-  {
-    m1.calcNextTriggerTime(time);
-    traffic(1);
+//Choose what behaviour the 
+void ledStart(int patt){
+  switch(patt){
+  case 0: //Include all of the pattern which changes in intervals
+    LEDRandom();
+    break;
+  case 1: //Shows Increment Pattern
+    incrementPatt();
+    colorRandom(); 
+    strip.setBrightness(brightPatt);
+    break;
+  case 2: //Shows Back Forth Pattern
+    backForth(5);
+    colorRandom(); 
+    strip.setBrightness(brightPatt);
+    break;
+  case 3:
+    oddSwap(); //Shows Odd Swap Pattern
+    colorRandom(); 
+    strip.setBrightness(brightPatt);
+    break;
+  case 4:
+    stackMult(1); //Shows Multi-Stack Pattern
+    colorRandom(); 
+    strip.setBrightness(brightPatt);
+    break;
+  case 5:
+    loopSingle(); //Shows Single Pixel Loop
+    colorRandom(); 
+    strip.setBrightness(brightPatt);
+    break;
   }
-
-  // Run a new random pattern
-  strip.setPixelColor(3, strip.Color(255, 0, 0));
-  colorRandom();
-  strip.setBrightness(brightPatt);
-
-  pattCycle++;
+  
 }
 
-// Function to visually indicate an error in the state of a motor (not rotating)
-void traffic(int state)
-{
-
-  // Clear the LED strip to recieve new information
-  strip.clear();
-  uint32_t colour = 0;
-
-  // If something is blocking the sensor the strip will be set to red, green if sensor is not blocked
-  if (state == 1)
-  {
-    colour = strip.Color(255, 0, 0);
-  }
-  else if (state == 0)
-  {
-    colour = strip.Color(0, 255, 0);
-  }
-
-  strip.fill(colour, 0, NUM_LEDS - 1);
-  strip.show();
+//Implements all of the LED pattern and randomizes
+void LEDRandom(){
+    stagePatt(pattNum);
+    colorRandom(); 
+    strip.setBrightness(brightPatt); 
+    Serial.println(pattNum);
+    if (pattCycle % 500 == 0) // Change patterns every 500 cycles
+    {
+      pattNum = random(0, 4);
+    }
+    pattCycle++;
 }
-
-/*
- * The following code is used for error detection. It is based on
- * analog read.
- * TODO: need driver to test. Do it in STGA!
- */
-
-// Function to detect if there is an error with the motor
-bool detectMotorError(Motor m)
-{
-  int errorValue = analogRead(m.getMotorNumber());
-  return errorValue > 300;
-}
-
-// Function to set all LEDs on the error LED strip to red
-void setRed()
-{
-  red = MAX_RGB;
-  green = MIN_RGB;
-  blue = MIN_RGB;
-}
-
-// Function to set all LEDs on the error LED strip to green
-void setGreen()
-{
-  red = MIN_RGB;
-  green = MAX_RGB;
-  blue = MIN_RGB;
-}
-
-// Function to set all LEDs on the error LED strip to red if an error occurs, otherwise green
-void setError()
-{
-  if (detectMotorError(m1) || detectMotorError(m2))
-  {
-    setRed();
-  }
-  else
-  {
-    setGreen();
-  }
-  errorStrip.fill(errorStrip.Color(red, green, blue), 0, ERROR_NUM_LEDS - 1);
-  errorStrip.show();
-}
-
-/*
- * The following code contains all the LED patterns.
- */
 
 // Pattern that increments each led
 void incrementPatt()
@@ -241,7 +185,7 @@ void incrementPatt()
     strip.setPixelColor(led_Patt_IncrementPattIndex, strip.Color(redColor, greenColor, blueColor));
     strip.show();
     led_Patt_Lasttriggered = time;
-    if (led_Patt_IncrementPattIndex == numPixPat - 1)
+    if (led_Patt_IncrementPattIndex == NUM_LEDS - 1)
     {
       strip.clear();
       led_Patt_IncrementPattIndex = -1;
@@ -266,7 +210,7 @@ void incrementPatt()
   }
 }
 
-// Back forth LED pattern (pix is a parameter that sets the block of LED thats going to follow the patteren)
+// Back forth LED pattern (pix is a parameter that sets the number of pixel in the block of LED thats going to follow the pattern)
 void backForth(int pix)
 {
   if (time >= led_Patt_Lasttriggered + led_Patt_Offset)
@@ -321,7 +265,7 @@ void oddSwap()
   {
     if (oddSwapCount % 2 == 0)
     {
-      for (int i = 0; i < 30 + 2; i += 2)
+      for (int i = 0; i < NUM_LEDS + 2; i += 2)
       {
         strip.setPixelColor(i, strip.Color(redColor, greenColor, blueColor));
       }
@@ -330,7 +274,7 @@ void oddSwap()
     }
     else
     {
-      for (int i = 1; i < 30 + 2; i += 2)
+      for (int i = 1; i < NUM_LEDS + 2; i += 2)
       {
         strip.setPixelColor(i, strip.Color(redColor, greenColor, blueColor));
       }
@@ -373,7 +317,7 @@ void loopSingle()
     led_Patt_IncrementPattIndex = -1;
 }
 
-// Stack mult LED pattern
+// Stack mult (Tetris like pattern) LED pattern
 void stackMult(int pix)
 {
   if (time >= led_Patt_Lasttriggered + led_Patt_Offset)
@@ -388,7 +332,7 @@ void stackMult(int pix)
       led_Patt_IncrementPattIndex = -1;
       numPixPat -= pix;
       if (numPixPat <= 0)
-        numPixPat = 32 + pix;
+        numPixPat = NUM_LEDS + pix;
     }
     if (brightCycle % 2 == 0)
     {
@@ -409,7 +353,7 @@ void stackMult(int pix)
   }
 }
 
-// Generate a random colour for a LED
+// Generate a random colour for the LED
 void colorRandom()
 {
   redColor = random(0, 100);
@@ -433,6 +377,9 @@ void stagePatt(int patt)
     break;
   case 3:
     stackMult(1);
+    break;
+  case 4:
+    loopSingle();
     break;
   }
 }
