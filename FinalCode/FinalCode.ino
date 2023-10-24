@@ -110,6 +110,7 @@ void setup()
 {
   Serial.begin(9600);
 
+  pinMode(A0, INPUT);
   // Configure the LED strip
   strip.begin();
   strip.setBrightness(125);
@@ -125,6 +126,15 @@ void setup()
 void loop()
 {
   time = millis();
+
+  int errorRead = analogRead(A0);
+  if(errorRead >= 700){
+     Serial.print(errorRead);
+     Serial.println("Stopped");
+  }else{
+    Serial.print(errorRead);
+    Serial.println("Working");
+  }
   
   ledStart(4);
 }
