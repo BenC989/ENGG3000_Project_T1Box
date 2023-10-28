@@ -3,10 +3,10 @@
 #define NUM_LEDS 12
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB);
 
-//Time variable
+// Time variable
 unsigned long time = 0;
 
-//LED pattern variables
+// LED pattern variables
 unsigned long led_Patt_Lasttriggered = 0;
 unsigned long led_Patt_IncrementPattIndex = 0;
 unsigned long led_Patt_Offset = 10;
@@ -22,64 +22,67 @@ int brightCycle = 0;
 int oddSwapCount = 0;
 int brightPatt = 10;
 
-
-void setup() {
+void setup()
+{
   strip.begin();
   strip.setBrightness(125);
   Serial.begin(9600);
 }
 
-void loop() {
- time = millis();
- ledStart(4);
+void loop()
+{
+  time = millis();
+  ledStart(4);
 }
 
-//Choose what behaviour the 
-void ledStart(int patt){
-  switch(patt){
-  case 0: //Include all of the pattern which changes in intervals
+// Choose what behaviour the
+void ledStart(int patt)
+{
+  switch (patt)
+  {
+  case 0: // Include all of the pattern which changes in intervals
     LEDRandom();
     break;
-  case 1: //Shows Increment Pattern
+  case 1: // Shows Increment Pattern
     incrementPatt();
-    colorRandom(); 
-  	strip.setBrightness(brightPatt);
+    colorRandom();
+    strip.setBrightness(brightPatt);
     break;
-  case 2: //Shows Back Forth Pattern
+  case 2: // Shows Back Forth Pattern
     backForth(5);
-    colorRandom(); 
-  	strip.setBrightness(brightPatt);
+    colorRandom();
+    strip.setBrightness(brightPatt);
     break;
   case 3:
-    oddSwap(); //Shows Odd Swap Pattern
-    colorRandom(); 
-  	strip.setBrightness(brightPatt);
+    oddSwap(); // Shows Odd Swap Pattern
+    colorRandom();
+    strip.setBrightness(brightPatt);
     break;
   case 4:
-    stackMult(1); //Shows Multi-Stack Pattern
-    colorRandom(); 
-  	strip.setBrightness(brightPatt);
+    stackMult(1); // Shows Multi-Stack Pattern
+    colorRandom();
+    strip.setBrightness(brightPatt);
     break;
   case 5:
-    loopSingle(); //Shows Single Pixel Loop
-    colorRandom(); 
-  	strip.setBrightness(brightPatt);
+    loopSingle(); // Shows Single Pixel Loop
+    colorRandom();
+    strip.setBrightness(brightPatt);
     break;
   }
-  
 }
 
-//Implements all of the LED pattern and randomizes
-void LEDRandom(){
-  	stagePatt(pattNum);
-  	colorRandom(); 
-  	strip.setBrightness(brightPatt); 
-  	Serial.println(pattNum);
-  	if (pattCycle % 500 == 0) // Change patterns every 500 cycles
-  	{
-    	pattNum = random(0, 4);
-  	}
-  	pattCycle++;
+// Implements all of the LED pattern and randomizes
+void LEDRandom()
+{
+  stagePatt(pattNum);
+  colorRandom();
+  strip.setBrightness(brightPatt);
+  Serial.println(pattNum);
+  if (pattCycle % 500 == 0) // Change patterns every 500 cycles
+  {
+    pattNum = random(0, 4);
+  }
+  pattCycle++;
 }
 
 // Pattern that increments each led
