@@ -4,8 +4,8 @@
 class TetrisPattern : public LEDPattern
 {
   private:
-    int numPixPat = 0;
-    int pix = 0;
+    int numPixPat = NUM_LEDS;
+    int pix = 3;
   
   public:
     TetrisPattern(LEDStrip& ledStripRef) : LEDPattern(ledStripRef) {}
