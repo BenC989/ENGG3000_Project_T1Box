@@ -4,7 +4,7 @@
 class BackForthPattern : public LEDPattern
 {
   private:
-    unsigned long pix = 0;
+    unsigned long pix = 3;
     int cycleCount = 0;
 
   public:
