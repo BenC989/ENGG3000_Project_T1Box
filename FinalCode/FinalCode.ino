@@ -103,8 +103,8 @@ public:
  */
 
 // Declare and initialise the two motors to be used
-Motor m1(3, 500);
-Motor m2(4, 500);
+Motor m1(1, 500);
+Motor m2(2, 500);
 
 // Function to initialise components
 void setup()
@@ -119,8 +119,10 @@ void setup()
   m1.setSpeed(255);
   m2.setSpeed(255);
 
-  m1.forward();
-  m2.forward();
+  // m1.forward();
+  // m2.forward();
+  m1.backward();
+  m2.backward();
 }
 
 // Function to continually execute the code
