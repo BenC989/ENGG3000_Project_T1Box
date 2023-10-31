@@ -1,10 +1,10 @@
 #include <Adafruit_NeoPixel.h>;
 #define LED_PIN 2
 #define NUM_LEDS 12
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(2, LED_PIN, NEO_GRB);
-Adafruit_NeoPixel fStrip = Adafruit_NeoPixel(3, LED_PIN, NEO_GRB);
-Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(2, LED_PIN, NEO_GRB);
-Adafruit_NeoPixel strip3 = Adafruit_NeoPixel(1, LED_PIN, NEO_GRB);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, 4, NEO_GRB); //TOP
+Adafruit_NeoPixel fStrip = Adafruit_NeoPixel(NUM_LEDS, 3, NEO_GRB); //Ferris Wheel
+Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(NUM_LEDS, 2, NEO_GRB); // staircase
+Adafruit_NeoPixel strip3 = Adafruit_NeoPixel(NUM_LEDS, 1, NEO_GRB); // track
 
 // Time variable
 unsigned long time = 0;
@@ -19,11 +19,16 @@ int redColor = 0;
 int greenColor = 0;
 int blueColor = 0;
 int pattNum = random(0, 4);
+int brightPatt = 10;
+
+//Important
 int pattCycle = 1;
 int cycleCount = 0;
 int brightCycle = 0; 
 int oddSwapCount = 0;
-int brightPatt = 10;
+
+int stairsCycleCount = 0
+
 
 void setup()
 {
@@ -303,6 +308,86 @@ void fTetris(int pix)
   }
 }
 
+//================Stairs LED================
+void stPatt(int pix)
+{
+  if (time >= led_Patt_Lasttriggered + led_Patt_Offset)
+  {
+    if (stairsCycleCount % 2 != 0)
+    {
+      strip2.setPixelColor(led_Patt_IncrementPattIndex, strip2.Color(redColor, greenColor, blueColor));
+      strip2.setPixelColor(led_Patt_IncrementPattIndex - pix, strip.Color(0, 0, 0));
+      led_Patt_Lasttriggered = time;
+    }
+    else
+    {
+      strip2.setPixelColor(led_Patt_IncrementPattIndex, strip2.Color(redColor, greenColor, blueColor));
+      strip2.setPixelColor(led_Patt_IncrementPattIndex + pix, strip.Color(0, 0, 0));
+      led_Patt_Lasttriggered = time;
+    }
+    strip2.show();
+    led_Patt_Lasttriggered = time;
+    if (led_Patt_IncrementPattIndex % 2 == 0)
+    {
+      strip2.setPixelColor(led_Patt_IncrementPattIndex - pix, strip.Color(0, 0, 0));
+    }
+    if (stairsCycleCount % 2 != 0)
+      led_Patt_IncrementPattIndex++;
+    if (stairsCycleCount % 2 == 0)
+      led_Patt_IncrementPattIndex--;
+    if (led_Patt_IncrementPattIndex >= NUM_LEDS)
+      stairsCycleCount++;
+    if (brightCycle % 2 == 0)
+    {
+      brightPatt += 5;
+    }
+    else if (brightCycle % 2 != 0)
+    {
+      brightPatt -= 5;
+    }
+    if (brightPatt == 255)
+    {
+      brightCycle++;
+    }
+    else if (brightPatt == 5)
+    {
+      brightCycle--;
+    }
+  }
+}
+
+//==============Track LED ===============
+void trackPatt()
+{
+  if (time >= led_Patt_Lasttriggered + led_Patt_Offset)
+  {
+    strip3.setPixelColor(led_Patt_IncrementPattIndex, strip3.Color(redColor, greenColor, blueColor));
+    strip3.show();
+    led_Patt_Lasttriggered = time;
+    if (led_Patt_IncrementPattIndex == NUM_LEDS - 1)
+    {
+      strip.clear();
+      led_Patt_IncrementPattIndex = -1;
+    }
+    led_Patt_IncrementPattIndex++;
+    if (brightCycle % 2 == 0)
+    {
+      brightPatt += 5;
+    }
+    else if (brightCycle % 2 != 0)
+    {
+      brightPatt -= 5;
+    }
+    if (brightPatt == 255)
+    {
+      brightCycle++;
+    }
+    else if (brightPatt == 5)
+    {
+      brightCycle--;
+    }
+  }
+}
 
 // Generate a random colour for the LED
 void colorRandom()
