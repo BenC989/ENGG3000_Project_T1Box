@@ -1,7 +1,10 @@
 #include <Adafruit_NeoPixel.h>;
 #define LED_PIN 2
 #define NUM_LEDS 12
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(2, LED_PIN, NEO_GRB);
+Adafruit_NeoPixel fStrip = Adafruit_NeoPixel(3, LED_PIN, NEO_GRB);
+Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(2, LED_PIN, NEO_GRB);
+Adafruit_NeoPixel strip3 = Adafruit_NeoPixel(1, LED_PIN, NEO_GRB);
 
 // Time variable
 unsigned long time = 0;
@@ -18,7 +21,7 @@ int blueColor = 0;
 int pattNum = random(0, 4);
 int pattCycle = 1;
 int cycleCount = 0;
-int brightCycle = 0;
+int brightCycle = 0; 
 int oddSwapCount = 0;
 int brightPatt = 10;
 
@@ -33,6 +36,7 @@ void loop()
 {
   time = millis();
   ledStart(4);
+  fTetris(2);
 }
 
 // Choose what behaviour the
@@ -260,6 +264,44 @@ void stackMult(int pix)
     }
   }
 }
+
+//======================= Ferris Wheel =======================
+
+void fTetris(int pix)
+{
+  if (time >= led_Patt_Lasttriggered + led_Patt_Offset)
+  {
+    fStrip.setPixelColor(led_Patt_IncrementPattIndex, fStrip.Color(redColor, greenColor, blueColor));
+    fStrip.setPixelColor(led_Patt_IncrementPattIndex - pix, fStrip.Color(0, 0, 0));
+    fStrip.show();
+    led_Patt_Lasttriggered = time;
+    led_Patt_IncrementPattIndex++;
+    if (led_Patt_IncrementPattIndex >= numPixPat)
+    {
+      led_Patt_IncrementPattIndex = -1;
+      numPixPat -= pix;
+      if (numPixPat <= 0)
+        numPixPat = NUM_LEDS + pix;
+    }
+    if (brightCycle % 2 == 0)
+    {
+      brightPatt += 5;
+    }
+    else if (brightCycle % 2 != 0)
+    {
+      brightPatt -= 5;
+    }
+    if (brightPatt == 255)
+    {
+      brightCycle++;
+    }
+    else if (brightPatt == 5)
+    {
+      brightCycle--;
+    }
+  }
+}
+
 
 // Generate a random colour for the LED
 void colorRandom()
