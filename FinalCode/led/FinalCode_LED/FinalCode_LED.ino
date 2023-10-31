@@ -35,8 +35,9 @@ void setup()
 void loop()
 {
   time = millis();
-  ledStart(4);
   fTetris(2);
+  colorRandom();
+  strip.setBrightness(brightPatt);
 }
 
 // Choose what behaviour the
