@@ -39,6 +39,15 @@ void setup()
   strip.begin();
   strip.setBrightness(125);
   Serial.begin(9600);
+
+  fStrip.begin();
+  fStrip.setBrightness(125);
+
+  strip2.begin();
+  strip2.setBrightness(125);
+
+  strip3.begin();
+  strip3.setBrightness(125);
 }
 
 void loop()
