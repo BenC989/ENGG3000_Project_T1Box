@@ -1,9 +1,16 @@
 #include <FastLED.h>
-#define NUM_LEDS 15
-#define DATA_PINA 8 
+
+#define DATA_PINA 8
+#define NUM_LEDSA 15
+
 #define DATA_PINB 7
+#define NUM_LEDSB 15
+
 #define DATA_PINC 6
+#define NUM_LEDSC 15
+
 #define DATA_PIND 5
+#define NUM_LEDSD 15
 
 unsigned long time = 0;
 
@@ -85,16 +92,16 @@ private:
   unsigned long led_Patt_IncrementPattIndex = 0;
 };
 
-LEDStrip stripA(DATA_PINA, NUM_LEDS, ledsA);
-LEDStrip stripB(DATA_PINA, NUM_LEDS, ledsB);
-LEDStrip stripC(DATA_PINA, NUM_LEDS, ledsC);
-LEDStrip stripD(DATA_PINA, NUM_LEDS, ledsD);
+LEDStrip stripA(DATA_PINA, NUM_LEDSA, ledsA);
+LEDStrip stripB(DATA_PINA, NUM_LEDSB, ledsB);
+LEDStrip stripC(DATA_PINA, NUM_LEDSC, ledsC);
+LEDStrip stripD(DATA_PINA, NUM_LEDSD, ledsD);
 
 void setup() {
-  FastLED.addLeds<WS2812, DATA_PINA, GRB>(ledsA, NUM_LEDS);
-  FastLED.addLeds<WS2812, DATA_PINB, GRB>(ledsB, NUM_LEDS);
-  FastLED.addLeds<WS2812, DATA_PINC, GRB>(ledsC, NUM_LEDS);
-  FastLED.addLeds<WS2812, DATA_PIND, GRB>(ledsD, NUM_LEDS);
+  FastLED.addLeds<WS2812, DATA_PINA, GRB>(ledsA, NUM_LEDSA);
+  FastLED.addLeds<WS2812, DATA_PINB, GRB>(ledsB, NUM_LEDSB);
+  FastLED.addLeds<WS2812, DATA_PINC, GRB>(ledsC, NUM_LEDSC);
+  FastLED.addLeds<WS2812, DATA_PIND, GRB>(ledsD, NUM_LEDSD);
 }
 
 void loop() {
