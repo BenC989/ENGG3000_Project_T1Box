@@ -1,3 +1,28 @@
+//================================Brief Rundown================================
+/*This code impliments a class for every strip of LED instead. The class contains
+necessary attributes to indipendently run a pattern itself. The patterns MUST be only called
+in loop() with the {className}.{patternName} format.
+
+================================HOW TO USE================================
+Step-by-Step how to how to use:
+
+1. Define necessary variables like pin number and number of leds in the strip
+
+2. Initialise the LEDarray strip OUTSIDE LOOP() and SETUP() (e.g. CRGB {nameOfArrayLED}[{numberOfLED}];)
+
+3. Initialise the LEDStrip Class with the parameter:
+    * int dataPin = in what pin number is the strip plugged to
+    * int numLeds = the number of LEDs in the strip
+    * CRGB* led = a pointer that takes in the led array
+   Example: LEDStrip stripA(DATA_PINA, NUM_LEDSA, ledsA);
+
+4. Add LEDs to the FastLED library component IN SETUP() (e.g. FastLED.addLeds<WS2812,{dataPin}, GRB>({LEDarray},{numberOfLEDs});)
+
+5. IN LOOP() call the method in the format of {className}.{patternName}
+===========================================================================
+
+*/
+
 #include <FastLED.h>
 
 #define DATA_PINA 8
