@@ -13,6 +13,7 @@ unsigned long time = 0;
 unsigned long led_Patt_Lasttriggered = 0;
 unsigned long led_Patt_IncrementPattIndex = 0;
 unsigned long led_Patt_Offset = 10;
+
 int numPixPat = 0;
 int LED_Patt_cycleCount = 0;
 int redColor = 0;
@@ -27,6 +28,9 @@ int cycleCount = 0;
 int brightCycle = 0; 
 int oddSwapCount = 0;
 
+
+int numPixPatF = 0;
+
 int stairsCycleCount = 0
 
 
@@ -40,6 +44,21 @@ void setup()
 void loop()
 {
   time = millis();
+  
+  //Top LED Start
+  ledStart(3);
+
+  //Track LED Start
+  trackPatt()
+  colorRandom();
+  strip.setBrightness(brightPatt);
+
+  //Staircase LED Start
+  stPatt(2)
+  colorRandom();
+  strip.setBrightness(brightPatt);
+
+  //Ferris Wheel LED Start
   fTetris(2);
   colorRandom();
   strip.setBrightness(brightPatt);
@@ -282,12 +301,12 @@ void fTetris(int pix)
     fStrip.show();
     led_Patt_Lasttriggered = time;
     led_Patt_IncrementPattIndex++;
-    if (led_Patt_IncrementPattIndex >= numPixPat)
+    if (led_Patt_IncrementPattIndex >= numPixPatF)
     {
       led_Patt_IncrementPattIndex = -1;
-      numPixPat -= pix;
+      numPixPatF -= pix;
       if (numPixPat <= 0)
-        numPixPat = NUM_LEDS + pix;
+        numPixPatF = NUM_LEDS + pix;
     }
     if (brightCycle % 2 == 0)
     {
