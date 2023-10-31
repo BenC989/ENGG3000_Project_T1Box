@@ -31,13 +31,6 @@ void loop() {
     LEDLastTrigger = time;
     index++;
 
-    /* 
-     * Maybe print out the index and see if it stays stuck at that value
-     * or if it does something else unexpected
-     * 
-     * see if it's using too much power? lower brightness
-    */
-
     if(index == 100){
       index = 0;
       off();
