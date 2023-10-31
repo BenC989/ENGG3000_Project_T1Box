@@ -1,3 +1,5 @@
+#define FASTLED_ALLOW_INTERRUPTS 0
+
 #include <FastLED.h>
 
 #define LED_PIN_STRIP_1     2 //ferris?
