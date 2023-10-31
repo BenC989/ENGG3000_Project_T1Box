@@ -1,66 +1,106 @@
-#define FASTLED_ALLOW_INTERRUPTS 0
-
 #include <FastLED.h>
+#define NUM_LEDS 15
+#define DATA_PINA 8 
+#define DATA_PINB 7
+#define DATA_PINC 6
+#define DATA_PIND 5
 
-#define LED_PIN_STRIP_1     2 //ferris?
-#define NUM_LEDS_STRIP_1    100 //21
-#define LED_PIN_STRIP_2     3 //track
-#define NUM_LEDS_STRIP_2    100 //10
-#define LED_PIN_STRIP_4     5 //roof?
-#define NUM_LEDS_STRIP_4    100
+unsigned long time = 0;
 
-CRGB leds_1[NUM_LEDS_STRIP_1];
-CRGB leds_2[NUM_LEDS_STRIP_2];
-CRGB leds_4[NUM_LEDS_STRIP_4];
+CRGB ledsA[NUM_LEDS]; //Roof?
+CRGB ledsB[NUM_LEDS]; //Track?
+CRGB ledsC[NUM_LEDS]; //Ferris Wheel?
+CRGB ledsD[NUM_LEDS]; //???
 
-unsigned int LEDLastTrigger = 0;
-int index = 0;
+class LEDStrip {
+public:
+  LEDStrip(int dataPin, int numLeds, CRGB* led) : dataPin(dataPin), numLeds(numLeds) {
+    leds = led;
+  }
+
+  void incrementPattern() {
+    if (time >= led_Patt_Lasttriggered + 50) {
+    leds[led_Patt_IncrementPattIndex] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+    FastLED.show();
+    if(led_Patt_IncrementPattIndex == numLeds-1){
+      fill_solid(leds, numLeds, CRGB(0, 0,0));
+      led_Patt_IncrementPattIndex = -1;
+    }
+    led_Patt_IncrementPattIndex++;
+    led_Patt_Lasttriggered = time;
+    }
+  }
+
+ void oddSwap(){
+    if (time >= led_Patt_Lasttriggered + 100) {
+      if(oddSwapFlag){
+        for(int i =0; i < numLeds ; i += 2){
+            leds[i] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+        }
+        FastLED.show();
+        oddSwapFlag = false;
+      }else if(!oddSwapFlag){
+        for(int i =0; i + 1 < numLeds ; i += 2){
+            leds[i] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+        }
+        FastLED.show();
+        oddSwapFlag = true;
+      }
+      fill_solid(leds, numLeds, CRGB(0, 0,0));
+      led_Patt_Lasttriggered = time;
+    }
+  }
+
+  void backForth(int pix){
+    if (time >= led_Patt_Lasttriggered + 100) {
+      fill_solid(leds, numLeds, CRGB(0, 0,0));
+      for(int i =0 ; i < pix; i++){
+        leds[led_Patt_IncrementPattIndex+i] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+      }
+      FastLED.show();
+      led_Patt_Lasttriggered = time;
+      if(hasReachEndBF(pix)){
+        led_Patt_IncrementPattIndex--;
+      }else{
+        led_Patt_IncrementPattIndex++;
+      }
+    }
+  }
+
+  bool hasReachEndBF(int pix){
+    if(led_Patt_IncrementPattIndex == numLeds -pix){
+      return true;
+    }else if(led_Patt_IncrementPattIndex <= 0){
+      return false;
+    }
+  }
+
+private:
+  int dataPin;
+  int numLeds;
+  int cycleCount;
+  bool oddSwapFlag = false;
+  CRGB* leds;
+  unsigned long led_Patt_Lasttriggered = 0;
+  unsigned long led_Patt_IncrementPattIndex = 0;
+};
+
+LEDStrip stripA(DATA_PINA, NUM_LEDS, ledsA);
+LEDStrip stripB(DATA_PINA, NUM_LEDS, ledsB);
+LEDStrip stripC(DATA_PINA, NUM_LEDS, ledsC);
+LEDStrip stripD(DATA_PINA, NUM_LEDS, ledsD);
+
 void setup() {
-  Serial.begin(9600);
-  FastLED.addLeds<WS2812, LED_PIN_STRIP_1, GRB>(leds_1, NUM_LEDS_STRIP_1);
-  FastLED.addLeds<WS2812, LED_PIN_STRIP_2, GRB>(leds_2, NUM_LEDS_STRIP_2);
-  FastLED.addLeds<WS2812, LED_PIN_STRIP_4, GRB>(leds_4, NUM_LEDS_STRIP_4);
-  
+  FastLED.addLeds<WS2812, DATA_PINA, GRB>(ledsA, NUM_LEDS);
+  FastLED.addLeds<WS2812, DATA_PINB, GRB>(ledsB, NUM_LEDS);
+  FastLED.addLeds<WS2812, DATA_PINC, GRB>(ledsC, NUM_LEDS);
+  FastLED.addLeds<WS2812, DATA_PIND, GRB>(ledsD, NUM_LEDS);
 }
 
 void loop() {
-  unsigned long time = millis();
-  
-  if(time > LEDLastTrigger + 300){
-    func(index);
-    LEDLastTrigger = time;
-    index++;
-
-    /* 
-     * Maybe print out the index and see if it stays stuck at that value
-     * or if it does something else unexpected
-     * 
-     * see if it's using too much power? lower brightness
-    */
-
-    if(index == 100){
-      index = 0;
-      off();
-    }
-  }
-  else {
-    Serial.println("not working");
-  }
-  // off();
-}
-
-void func(int i){
-    leds_1[i] = CRGB(255, 0, 0);
-    leds_2[i] = CRGB(255, 0, 0);
-    leds_4[i] = CRGB(255, 0, 0);
-    FastLED.show();
-}
-
-void off(){
-  for(int i = 0; i < 100; i++){
-    leds_1[i] = CRGB(0, 0, 0);
-    leds_2[i] = CRGB(0, 0, 0);
-    leds_4[i] = CRGB(0, 0, 0);
-    FastLED.show();
-  }
+  time = millis();
+  stripA.incrementPattern();
+  stripB.backForth(2);
+  stripC.oddSwap();
+  stripD.incrementPattern();
 }
