@@ -1,0 +1,171 @@
+#include <FastLED.h>
+
+//Track
+#define DATA_PINB 3
+#define NUM_LEDSB 10
+
+//Ferris
+#define DATA_PIND 2
+#define NUM_LEDSD 20
+
+unsigned long time = 0;
+int index = 0;
+boolean forwards = true;
+
+CRGB ledsB[NUM_LEDSB]; 
+CRGB ledsD[NUM_LEDSD]; 
+
+class LEDStrip {
+public:
+  LEDStrip(int dataPin, int numLeds, CRGB* led) : dataPin(dataPin), numLeds(numLeds) {
+    leds = led;
+  }
+
+  void incrementPattern() {
+    if (time >= led_Patt_Lasttriggered + 75) {
+    leds[led_Patt_IncrementPattIndex] = CRGB(random(25, 100), random(175, 220), random(25, 100));
+    FastLED.show();
+    if(led_Patt_IncrementPattIndex == numLeds-1){
+      fill_solid(leds, numLeds, CRGB(0, 0,0));
+      led_Patt_IncrementPattIndex = -1;
+    }
+    led_Patt_IncrementPattIndex++;
+    led_Patt_Lasttriggered = time;
+    }
+  }
+
+   void forth(int pix) {
+    if (time >= led_Patt_Lasttriggered + 75) {
+      fill_solid(leds, numLeds, CRGB(0, 0,0));
+      for(int i =0 + led_Patt_IncrementPattIndex ; i < pix + led_Patt_IncrementPattIndex; i++){
+        leds[(led_Patt_IncrementPattIndex+i)%10] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+      }
+      if(led_Patt_IncrementPattIndex == numLeds-1){
+        fill_solid(leds, numLeds,  CRGB(0, 0,0));
+        led_Patt_IncrementPattIndex = -1;
+      }
+      led_Patt_IncrementPattIndex++;
+      led_Patt_Lasttriggered = time;
+    }
+  }
+
+   void incrementReversePattern() {
+    if (time >= led_Patt_Lasttriggered + 75) {
+      leds[numLeds-1-led_Patt_IncrementPattIndex] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+      FastLED.show();
+      if(led_Patt_IncrementPattIndex == numLeds-1){
+        fill_solid(leds, numLeds,  CRGB(0, 0,0));
+        led_Patt_IncrementPattIndex = -1;
+      }
+      led_Patt_IncrementPattIndex++;
+      led_Patt_Lasttriggered = time;
+    }
+  }
+
+
+
+ void oddSwap(){
+    if (time >= led_Patt_Lasttriggered + 500) {
+      fill_solid(leds, numLeds, CRGB(0, 0,0));
+      if(oddSwapFlag){
+        for(int i =0; i < numLeds ; i += 2){
+            leds[i] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+        }
+        FastLED.show();
+        oddSwapFlag = false;
+      }
+      else if(!oddSwapFlag){
+        for(int i =1; i < numLeds ; i += 2){
+            leds[i] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+        }
+        FastLED.show();
+        oddSwapFlag = true;
+      }
+      led_Patt_Lasttriggered = time;
+    }
+  }
+
+  void backForth(int pix){
+    if (time >= led_Patt_Lasttriggered + 100) {
+      fill_solid(leds, numLeds, CRGB(0, 0,0));
+      for(int i =0 ; i < pix; i++){
+        leds[led_Patt_IncrementPattIndex+i] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+      }
+      FastLED.show();
+      led_Patt_Lasttriggered = time;
+      if(hasReachEndBF(pix)){
+        forwards = false;
+      }
+      else if (hasReachStartBF(pix)){
+        forwards = true;
+      }
+      if (forwards == true) {
+        led_Patt_IncrementPattIndex++;
+      }
+      else {
+        led_Patt_IncrementPattIndex--;
+      }
+    }
+  }
+
+  void backForthTest(int pix){
+    if (time >= led_Patt_Lasttriggered + 100) {
+      fill_solid(leds, numLeds, CRGB(0, 0,0));
+      for(int i =0 ; i < pix; i++){
+        leds[led_Patt_IncrementPattIndex+i] = CRGB(random(25, 200), random(25, 200), random(25, 200));
+      }
+      FastLED.show();
+      led_Patt_Lasttriggered = time;
+      if(hasReachEndBF(pix)){
+        forwards = false;
+      }
+    }
+  }
+
+  bool hasReachEndBF(int pix){
+    if(led_Patt_IncrementPattIndex == (numLeds - pix)){
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  bool hasReachStartBF(int pix){
+    if(led_Patt_IncrementPattIndex == 0){
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+private:
+  int dataPin;
+  int numLeds;
+  int cycleCount;
+  bool oddSwapFlag = false;
+  CRGB* leds;
+  unsigned long led_Patt_Lasttriggered = 0;
+  unsigned long led_Patt_IncrementPattIndex = 0;
+  unsigned long LEDLastTrigger = 0;
+};
+
+LEDStrip stripB(0, NUM_LEDSB, ledsB);
+LEDStrip stripD(0, NUM_LEDSD, ledsD);
+
+void setup() {
+  Serial.begin(9600);
+  index = 0;
+
+  FastLED.addLeds<WS2812, DATA_PINB, GRB>(ledsB, NUM_LEDSB);
+  FastLED.addLeds<WS2812, DATA_PIND, GRB>(ledsD, NUM_LEDSD);
+
+  FastLED.setBrightness(255);
+}
+
+void loop() {
+  time = millis();
+  stripB.incrementPattern();
+  stripD.incrementPattern();
+}
